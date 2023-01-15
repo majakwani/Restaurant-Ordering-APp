@@ -2,6 +2,17 @@ import { menuArray } from "./data.js";
 import { orderDetails } from "./orderDetails.js"
 
 let isPaymentFormRendered = false
+
+const checkoutSection = document.getElementById('checkout-section')
+checkoutSection.innerHTML = `
+<p class="order heading">Your Order</p>
+
+<div id="order-details"></div>
+<div class="checkout">
+<button type="button" id="checkout-btn" class="checkout">Complete order</button>
+</div>
+`
+
 const menuItems = document.getElementById('menu-items')
 
 function renderMenuItems(){
@@ -23,29 +34,8 @@ function renderMenuItems(){
     })
 }
 
-renderMenuItems()
-
-document.addEventListener('click', function(e){
-    if(e.target.dataset.dish && !isPaymentFormRendered){
-        addDishToOrder(e.target.dataset.dish)   
-    }
-    if(e.target.dataset.id && !isPaymentFormRendered){
-        removeDish(e.target.dataset.id)
-    }
-    if(e.target.id === "checkout-btn" && orderDetails.length >= 1 && !isPaymentFormRendered){
-        renderPaymentForm()
-    }
-    if(e.target.id === "pay-button"){
-        if(document.getElementById('name').value.length == 0 || document.getElementById('number').value.length == 0 || document.getElementById('cvv').value.length == 0){
-            alert("Empty input fields")
-        }
-        else{
-        orderCompleted()
-        }
-    }
-})
-
 function addDishToOrder(id){
+    document.getElementById('greeting').style.display = "none"
     const orderObj = {
         name: menuArray[id].name,
         price: menuArray[id].price,
@@ -64,14 +54,14 @@ const orderItems = document.getElementById('order-details')
 function renderOrderDetails(){
     if(orderDetails.length >=1){
         document.getElementById('checkout-section').style.display = "block"
-    
-    let totalPrice = 0
-    orderItems.innerHTML = ""
-    orderDetails.forEach(function(orderItem, index){
-        totalPrice += orderItem.price
-        orderItems.innerHTML += `<div class="item">
-        <p class="dish-name">${orderItem.name}</p>
-        <button type="button" class="remove" data-id = ${index}>remove</button>
+        
+        let totalPrice = 0
+        orderItems.innerHTML = ""
+        orderDetails.forEach(function(orderItem, index){
+            totalPrice += orderItem.price
+            orderItems.innerHTML += `<div class="item">
+            <p class="dish-name">${orderItem.name}</p>
+            <button type="button" class="remove" data-id = ${index}>remove</button>
         <p class="price bill">$${orderItem.price}</p>
       </div>`
     })
@@ -91,10 +81,27 @@ function renderPaymentForm(){
     document.getElementById('form').style.display = "block"
 }
 
-function orderCompleted(){
-    isPaymentFormRendered = false
-    document.getElementById('form').style.display = "none"
-    document.getElementById('checkout-section').innerHTML = `<div class = "greeting">
-    <p>Thanks, James! Your order is on it's way.</p>
-    </div>` 
-}
+const greetingMessage = document.getElementById('greeting')
+isPaymentFormRendered = false
+document.querySelector('form').addEventListener('submit', function(e){
+    e.preventDefault()
+    document.getElementById('form').style.display = 'none'
+    orderDetails.splice(0, orderDetails.length)
+    renderOrderDetails()
+    greetingMessage.style.display = "block"
+    greetingMessage.innerHTML = `<p>Thanks ${document.getElementById('name').value}! Your order is on its way!</p>`    
+})
+
+document.addEventListener('click', function(e){
+    if(e.target.dataset.dish && !isPaymentFormRendered){
+        addDishToOrder(e.target.dataset.dish)   
+    }
+    if(e.target.dataset.id && !isPaymentFormRendered){
+        removeDish(e.target.dataset.id)
+    }
+    if(e.target.id === "checkout-btn" && orderDetails.length >= 1 && !isPaymentFormRendered){
+        renderPaymentForm()
+    }
+})
+
+renderMenuItems()
