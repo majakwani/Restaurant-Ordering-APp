@@ -236,16 +236,17 @@ form > input{
   margin-block: 11.5px;
 }
 
-#pay-button{
+input[submit]{
   width: 476px;
   height: 72px;
   margin-top: 35px;
   margin-inline: auto;
 }
 
-.greeting{
-  display: grid;
-  place-items: center;
+#greeting{
+  display: none;
+  text-align: center;
+  padding: 50px 0 50px 0;
   width: 504px;
   height: 120px;
   background-color: #ECFDF5;
@@ -255,4 +256,6 @@ form > input{
   font-size: 32px;
   line-height: 17px;
   color: #065F46;
+  margin-inline: auto;
+  margin-block: 45px;
 }
